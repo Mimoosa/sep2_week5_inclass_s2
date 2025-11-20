@@ -46,35 +46,24 @@ pipeline {
 
 
 
-        stage('Build Docker Image') {
-                    steps {
-                        script {
-                            docker.build("${DOCKERHUB_REPO}:${DOCKER_IMAGE_TAG}")
-                            // Or specify Dockerfile path explicitly if needed
-                            // docker.build("${DOCKERHUB_REPO}:${DOCKER_IMAGE_TAG}", "-f ./Dockerfile .")
+stage('Push Docker Image to Docker Hub') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'Docker_HUB', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                    script {
+                        if (isUnix()) {
+                            sh """
+                                echo \$DOCKER_PASS | docker login -u \$DOCKER_USER --password-stdin
+                                docker push ${DOCKER_IMAGE}:${DOCKER_IMAGE_TAG}
+                            """
+                        } else {
+                            bat """
+                                echo %DOCKER_PASS% | docker login -u %DOCKER_USER% --password-stdin
+                                docker push ${DOCKER_IMAGE}:${DOCKER_IMAGE_TAG}
+                            """
                         }
                     }
                 }
-
-                stage('Push Docker Image to Docker Hub') {
-                    steps {
-                                    withCredentials([usernamePassword(credentialsId: 'Docker_HUB', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-                                        script {
-                                            if (isUnix()) {
-                                                sh """
-                                                    echo \$DOCKER_PASS | docker login -u \$DOCKER_USER --password-stdin
-                                                    docker push ${DOCKER_IMAGE}:${DOCKER_IMAGE_TAG}
-                                                """
-                                            } else {
-                                                bat """
-                                                    echo %DOCKER_PASS% | docker login -u %DOCKER_USER% --password-stdin
-                                                    docker push ${DOCKER_IMAGE}:${DOCKER_IMAGE_TAG}
-                                                """
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                }
+            }
+        }
     }
 }
