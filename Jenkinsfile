@@ -43,6 +43,18 @@ pipeline {
                         }
                     }
                 }
+                stage('Build Docker Image') {
+                            steps {
+                                script {
+                                    if (isUnix()) {
+                                        sh "docker build -t ${DOCKER_IMAGE}:${DOCKER_IMAGE_TAG} ."
+                                    } else {
+                                        bat "docker build -t ${DOCKER_IMAGE}:${DOCKER_IMAGE_TAG} ."
+                                    }
+                                }
+                            }
+                        }
+
 
 
 
