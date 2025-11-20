@@ -18,7 +18,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git branch: 'master', url: 'https://github.com/Mimoosa/sep2_week5_inclass_s2.git'
+                git branch: 'main', url: 'https://github.com/Mimoosa/sep2_week5_inclass_s2.git'
             }
         }
 
